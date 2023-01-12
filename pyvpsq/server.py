@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class Server:
     ip: str
     query_port: int
@@ -12,3 +15,8 @@ class Server:
 
     def __repr__(self):
         return f'{self.ip}:{self.query_port}'
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, type(self)) and \
+            other.ip == self.ip and \
+            other.query_port == self.query_port
