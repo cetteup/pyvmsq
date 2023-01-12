@@ -4,7 +4,7 @@ from .principalserver import PrincipalServer, Region
 from .server import Server
 
 """
-pyvmsq.
+pyvpsq.
 
 Simple Python library for querying Valve's principal servers.
 """

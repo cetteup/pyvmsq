@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 from typing import List
 
-from pyvmsq.buffer import Buffer
+from pyvpsq.buffer import Buffer
 
 
 class BufferTest(unittest.TestCase):
