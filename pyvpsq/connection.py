@@ -32,6 +32,8 @@ class Connection:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(self.timeout)
 
+        logger.debug(f'Connecting to {self.address}:{self.port}')
+
         try:
             self.sock.connect((self.address, self.port))
             self.is_connected = True
@@ -54,7 +56,7 @@ class Connection:
         except socket.error:
             raise ConnectionError('Failed to send data to server')
 
-        logger.debug(bytes(packet))
+        logger.debug(f'Sent packet/data: {bytes(packet).hex(" ")}')
 
     def read(self) -> Packet:
         if not self.is_connected:
@@ -66,8 +68,8 @@ class Connection:
         buffer = self.read_safe(UDP_MAX_DATA_SIZE)
         packet = self.packet_type.from_buffer(buffer)
 
-        logger.debug(f'Received packet header: {packet.header}')
-        logger.debug(f'Received packet body: {packet.body}')
+        logger.debug(f'Received packet header: {packet.header.hex(" ")}')
+        logger.debug(f'Received packet body: {packet.body.hex(" ")}')
 
         if not packet.is_valid():
             raise Error('Received invalid packet')
