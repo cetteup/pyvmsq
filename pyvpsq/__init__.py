@@ -9,7 +9,7 @@ pyvpsq.
 Simple Python library for querying Valve's principal servers and their game servers.
 """
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __author__ = 'cetteup'
 __credits__ = [
     'https://github.com/ValvePython/steam',
