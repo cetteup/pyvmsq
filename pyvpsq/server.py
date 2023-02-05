@@ -30,19 +30,23 @@ class ServerInfo:
     password: bool
     secure: bool
     version: str
+    game_port: Optional[int] = None
 
 
 class Server:
     ip: str
     query_port: int
+    game_port: Optional[int]
 
-    def __init__(self, ip: str, query_port: int):
+    def __init__(self, ip: str, query_port: int, game_port: Optional[int] = None):
         self.ip = ip
         self.query_port = query_port
+        self.game_port = game_port
 
     def __iter__(self):
         yield 'ip', self.ip
         yield 'query_port', self.query_port
+        yield 'game_port', self.game_port
 
     def __repr__(self):
         return f'{self.ip}:{self.query_port}'
@@ -50,12 +54,13 @@ class Server:
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, type(self)) and \
             other.ip == self.ip and \
-            other.query_port == self.query_port
+            other.query_port == self.query_port and \
+            other.game_port == self.game_port
 
     def get_info(self, timeout: float = 1.0):
         buffer, *_ = self.query(ServerQueryType.Info, timeout=timeout)
 
-        return ServerInfo(
+        info = ServerInfo(
             protocol=buffer.read_uchar(),
             name=buffer.read_c_string(),
             map=buffer.read_c_string(),
@@ -71,6 +76,15 @@ class Server:
             secure=bool(buffer.read_uchar()),
             version=buffer.read_c_string()
         )
+
+        extra_flag = buffer.read_uchar()
+        if extra_flag & 0x80:
+            game_port = buffer.read_ushort(byte_order=ByteOrder.LittleEndian)
+            self.game_port = game_port
+            info.game_port = game_port
+
+        return info
+
 
     def query(self, *args: ServerQueryType, timeout: float) -> List[Buffer]:
         connection = Connection(self.ip, self.query_port, ServerPacket, timeout=timeout)
